@@ -1,0 +1,24 @@
+tabela_update_odbc_connect_id.xlsm
+
+pra que serve?
+tabela criada no intuito de agilizar a parametrizacao / apontamento das tabelas odbc para a conexao correta.
+aonde acontece?
+ocorre uma alteracao na tabela TDFE_ODBC_ESTABELECIMENTO aonde esta armazenado os ZOOMS de cada empresa/estabelecimento e o dado para qual connection query
+cada zoom aponta.
+
+como deve ser utilizada?
+
+CERTIFICAR-SE DE CHECAR O CAMPO "Empresa" INSERINDO O CODIGO DA EMPRESA QUE SOFRERA AS ALTERACOES
+
+1. realizar a conexao com cada odbc necessária no ambiente do cliente (dados de conexao em: manutencao > odbc connection)
+	1.1 dentro do ambiente do cliente, utilizando a ferramenta de consulta odbc rodar o script abaixo:
+	SELECT ('"""'||T.TBL||'"""') AS TABELAS FROM SYSPROGRESS."SYSTABLES" AS T WHERE T.TBL IN('ccusto','item-doc-est','ordem-compra','prazo-compra','pedido-compr','cotacao-item','conta-contab','plano_cta_unid_organ', 'cta_ctbl_integr', 'plano_cta_ctbl','cta_ctbl','ordem-compra', 'prazo-compra','deposito','docum-est','usuar_mestre','emitente','estabelec','grup-estoque','item','item-fornec','localizacao','deposito','nar-it-nota','nat-oper-tr','natur-oper','nota-fiscal','ordem-compra','cotacao-item', 'prazo-compra','medicao-contrat','ord-prod','saldo-terc','doc-pend-aprov','transporte','unid-negoc');
+		1.1.1 apos exibido o resultado clicar em copy to clipboard
+2. acessar a planilha 
+	2.1 alimentar a coluna com titulo "Conexao 1" (coluna D por exemplo) alterando o seu titulo para o nome do banco consultado (ex.: Datasul/EMS - Progress - MGIND)
+	2.2 colar as informacoes que estao na area de colagem (proveniente do item 1.1.1) na coluna D linha 2 (lembrando que o primeiro item é o nome da consulta e nao sera atribuido um update para ele e nem deve ser retirado da tabela)
+	2.3 alimentar a coluna que indica o cod do banco a ser apontado (coluna B)
+3. clicar no botao a esquerda com nome de "COPIA UPDATES"
+4. abrir o banco de dados a ser atualizado
+	4.1 colar em uma query
+	4.2 rodar e verificar a quantidade de linhas afetadas

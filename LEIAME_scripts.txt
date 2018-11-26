@@ -1,0 +1,39 @@
+O ARQUIVO rnd.exe DEVE ESTAR JUNTO COM OS SCRIPTS OBRIGATORIAMENTE NA PASTA GOVERNANCA
+E TODOS OS SCRIPTS DEVEM SER EXECUTADOS COMO ADMINISTRADOR
+
+1.script_altera_config_servicos.bat ----
+O que faz? 
+Obs.:a verificacao se e prod. ou homolog. e para setar a porta do item 1.2.1 automaticamente
+
+1.1 Altera os parametros de localizacao das criptografias nos arquivos de configurações de todos os servicos do receiver
+	1.1.1 no servico QuiriusNfseService altera o buffer size adicionando 00 no final da numeracao
+1.2 em web.config
+	1.2.1- altera parametros de localizacao da criptografia do web config da pasta aplicacao
+	1.2.2- todas os "C:\inetpub\wwwroot\Auditor\Application" viram "C:\inetpub\wwwroot\Governanca\Aplicacao"
+	1.2.3- altera a tag "key="SiteUrl" value="http://localhost:25800/"" para "key="SiteUrl" value="http://%hostname%:%port%/"" (nome do computador:porta padrao)
+
+2. script_copia_admin.bat -------
+O que faz?
+Obs.: somente os servicos da pasta receiver sao atendidos por essa solucao
+2.1 copia a pasta admin da pasta da aplicação para todas as pastas dos servicos do receiver
+
+3.script_cria_servicos.bat -------
+O que faz?
+Obs.: pode ser necessário acessar o serviço e reeinserir a senha em um deles.
+3.1 Cria os todos os servicos de acordo com os questionamentos, com o usuario e senha informados para autenticacao, com start auto e parado
+3.1.1- a verificacao se e prod. ou homolog. para adicionou (ou nao) o prefixo "_Hom" apos o nome do servico
+
+4.script_altera_parametros_aplicacao.bat ------
+O que faz?
+Obs.: é extremamente necessário que a localizacao parametros > dfe > aplicacao seja acessado pelo menos uma vez após a instalacao/atualizacao
+4.1 Altera os parametros da aba 'Parametros > DFe > Aplicacao', de acordo com o que foi respondido nos questionamentos do script
+
+5.script_roda_scripts_sql -------
+O que faz?
+Executa todos os scripts sql da pasta \Database\SqlServer em ordem 
+Obs.: se o script apresentar um erro ele apontara o arquivo e o erro podera ser analisado na pasta de logs (\Database\SqlServer\Logs) e o script em questão 
+deve ser rodado manual e depois rodar o script (.bat) novamente para que ele continue a rodar o proximo script, caso ele nao apresente erro, checar se os 15 
+arquivos de log foram criados na pasta de logs. NÃO DEVE-SE MEXER NA PASTA DE LOGS pois a aplicacao utiliza dos arquivos internos para saber quais script pular.
+5.1 Utilizando da ordem predefinida tanto no .bat quanto na pasta de sql ele executara no banco utilizando os dados de conexão inseridos anteriormente
+	5.1.1 se acontecer um erro, analisar o ultimo log da pasta de logs, rodar o sql manualmente e executar novamente o .bat. ELE CONTINUARA DO SQL SEGUINTE
+		AO QUE DEU ERRO
