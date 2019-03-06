@@ -42,11 +42,6 @@ SET /p instance= *** INSTÂNCIA (SE TIVER):
 SET /p dbname=  *** NOME DA BASE DE DADOS:
 SET /p user= *** USUÁRIO DO BANCO:
 SET /p password= *** SENHA:
-REM SET ip=qualidade.quirius.com.br
-REM SET instance=
-REM SET dbname=Governanca_8089
-REM SET user=sa
-REM SET password=@quirius123
 CLS
 ECHO *************************************************************
 ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
