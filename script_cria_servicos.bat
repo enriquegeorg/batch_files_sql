@@ -1,12 +1,19 @@
-@echo off
+@ECHO OFF
+Title %~n0
+Mode 80,21 & Color A
+
+ECHO *************************************************************
+ECHO *********          SCRIPT CRIA SERVICOS        **************
+ECHO *************************************************************
 
 :again
 set location=%~dp0
-set /p user= Informe o usuario que ira iniciar os servicos (ex: domain\user):
-set /p password= Informe a senha do usuario que ira iniciar os servicos:
-set /p auditor= Tem auditor (1-sim / 2-nao):
-set /p agendador= Tem agendador (1-sim / 2-nao):
-set /p ishom= E servico de homologacao (1-sim / 2-nao):
+SET /p user= *** USUARIO DE AUTENTICACAO:
+REM SET /p password= *** SENHA:
+Call:InputPassword "*** SENHA" password
+set /p auditor= *** TEM AUDITOR?: (1-sim / 2-nao):
+set /p agendador= *** TEM AGENDADOR? (1-sim / 2-nao):
+set /p ishom= *** E AMBIENTE DE HOMOLOGACAO? (1-sim / 2-nao):
 set displayhom=
 
 if %ishom%==1 (
@@ -37,4 +44,19 @@ sc description GovDFeVerify%displayhom% "Governanca Fiscal - Servico Verificacao
 sc create "GovDFeEmail%displayhom%" displayname="GovDFeEmail%displayhom%" type=own error=severe start=auto obj="%user%" password=%password% binpath= "%location%Servicos\Receiver\QuiriusWinService\QuiriusWinService.exe"
 sc description GovDFeEmail%displayhom% "Governanca Fiscal - Servico Leitura de Emails"
 
-pause
+:finish
+ECHO *************************************************************
+ECHO *********  FIM DO PROCESSO               ********************
+ECHO ******  VERIFIQUE SE HÁ MENSAGENS DE ERROS ACIMA    *********
+ECHO ******  PRESSIONE QUALQUER TECLA PARA SAIR ...      *********
+ECHO *************************************************************
+PAUSE>nul
+EXIT
+
+:InputPassword
+SET "psCommand=powershell -Command "$pword = read-host '%1' -AsSecureString ; ^
+    $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
+      [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
+        for /f "usebackq delims=" %%p in (`%psCommand%`) do set %2=%%p
+)
+GOTO :eof

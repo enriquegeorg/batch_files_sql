@@ -1,12 +1,37 @@
-@echo off
+@ECHO OFF
+Title %~n0
+Mode 80,21 & Color A
 
-set location=%~dp0
-set /p ip=  Informe o ip de banco que deve sofrer as alteracoes:
-set /p instance=  Informe a instancia de banco que deve sofrer as alteracoes (Se tiver):
-set /p dbname=  Informe o nome do banco:
-set /p user= Informe o usuario do banco:
-set /p password= Informe a senha do usuario informado:
-set logslocation=%location%Database\SqlServer\Logs
+CHCP 65001
+CLS
+:connectionsql
+SET location=%~dp0
+ECHO *************************************************************
+ECHO *********     SCRIPT RODA SCRIPTS PACOTE       **************
+ECHO *************************************************************
+SET /p ip= *** IP DO BANCO:
+SET /p instance= *** INSTANCIA:
+SET /p dbname= *** NOME DA BASE:
+SET /p user= *** USUARIO DE AUTENTICACAO:
+REM SET /p password= *** SENHA:
+Call:InputPassword "*** SENHA" password
+CLS
+ECHO *************************************************************
+ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
+ECHO *************************************************************
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "use master"
+IF ERRORLEVEL 1 (
+  ECHO ******************   ERRO DE CONEXAO    **********************
+  PAUSE>NUL
+GOTO connectionsql
+)
+CLS
+
+SET logslocation=%location%Database\SqlServer\Logs
+
+ECHO *************************************************************
+ECHO *********  AGUARDE: SCRIPTS EM EXECUCAO      ****************
+ECHO *************************************************************
 
 IF NOT EXIST %logslocation% (
   mkdir %logslocation%
@@ -157,5 +182,18 @@ IF NOT ERRORLEVEL 1 (
 ) ELSE (
   ECHO EXECUTE O ARQUIVO 10_Estrutura_Gov_Cadastros MANUALMENTE e rode este arquivo novamente
 )
-PAUSE>nul |set/p =FINALIZADO PROCESSO DE EXECUCAO DOS SCRIPTS...
+:finish
+ECHO *************************************************************
+ECHO *********  FIM DO PROCESSO               ********************
+ECHO ******  PRESSIONE QUALQUER TECLA PARA SAIR ...      *********
+ECHO *************************************************************
+PAUSE>nul
 EXIT
+
+:InputPassword
+SET "psCommand=powershell -Command "$pword = read-host '%1' -AsSecureString ; ^
+    $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
+      [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
+        for /f "usebackq delims=" %%p in (`%psCommand%`) do set %2=%%p
+)
+GOTO :eof

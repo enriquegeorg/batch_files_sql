@@ -1,7 +1,20 @@
-@echo off
-set location=%~dp0
+@ECHO OFF
+Title %~n0
+Mode 80,21 & Color A
+SET location=%~dp0
 
-for %%D in (
+
+ECHO *************************************************************
+ECHO *********       SCRIPT COPIA PASTA ADMIN       **************
+ECHO *************************************************************
+ECHO ****   LEMBRE-SE: CONEXAO DEVE ESTAR PARAMETRIZADA    *******
+ECHO *************************************************************
+ECHO ***********   APERTE ENTER PARA CONTINUAR        ************
+ECHO *************************************************************
+PAUSE>NUL
+
+IF NOT EXIST %location%Servicos\Receiver GOTO error
+FOR %%D IN (
 %location%Servicos\Receiver\QuiriusCopyService\
 %location%Servicos\Receiver\QuiriusImportService\
 %location%Servicos\Receiver\QuiriusNfeUtilService\
@@ -9,14 +22,20 @@ for %%D in (
 %location%Servicos\Receiver\QuiriusSyncService\
 %location%Servicos\Receiver\QuiriusVerifyService\
 %location%Servicos\Receiver\QuiriusWinService\
-) do robocopy "%location%Aplicacao\Admin" %%DAdmin /E
+%location%Servicos\Auditor\AuditorService\
+%location%Servicos\Auditor\CalendarService\
+) DO robocopy "%location%Aplicacao\Admin" %%DAdmin /E /is /it
+IF EXIST %location%Ferramentas\AuditorMaintenance robocopy "%location%Aplicacao\Admin" "%location%Ferramentas\AuditorMaintenance\Admin" /E
 
 IF %ERRORLEVEL% LSS 8 GOTO finish
+:error
+ECHO *************************************************************
+ECHO *********       ACONTECEU UM ERRO              **************
 
-ECHO ALGUM ERRO ACONTECEU (VERIFIQUE O LEIA-ME) & GOTO :eof
 
 :finish
-
-ECHO AS PASTAS FORAM COPIADAS COM SUCESSO
-
-PAUSE
+ECHO *************************************************************
+ECHO *********  FIM DO PROCESSO               ********************
+ECHO ******  PRESSIONE QUALQUER TECLA PARA SAIR ...      *********
+ECHO *************************************************************
+PAUSE>nul

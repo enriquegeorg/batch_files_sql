@@ -1,4 +1,6 @@
 @echo OFF
+Title %~n0
+Mode 80,21 & Color A
 
 CHCP 65001
 :bdtype
@@ -17,8 +19,9 @@ ECHO *************************************************************
 ECHO *********  INSIRA OS DADOS DE CONEXÃO     *******************
 ECHO *************************************************************
 SET /p ip= *** ENDEREÇO DO SERVIDOR (C/ PORTA SE HOUVE):
-SET /p user= *** USUÁRIO DO BANCO:
-SET /p password= *** SENHA:
+SET /p user= *** USUARIO DO BANCO:
+REM SET /p password= *** SENHA:
+Call:InputPassword "*** SENHA" password
 CLS
 ECHO *************************************************************
 ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
@@ -41,7 +44,13 @@ SET /p ip= *** IP DO SERVIDOR:
 SET /p instance= *** INSTÂNCIA (SE TIVER):
 SET /p dbname=  *** NOME DA BASE DE DADOS:
 SET /p user= *** USUÁRIO DO BANCO:
-SET /p password= *** SENHA:
+Call:InputPassword "*** SENHA" password
+REM SET /p password= *** SENHA:
+REM SET ip=qualidade.quirius.com.br
+REM SET instance=
+REM SET dbname=Governanca_8089
+REM SET user=sa
+REM SET password=@quirius123
 CLS
 ECHO *************************************************************
 ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
@@ -96,8 +105,6 @@ ECHO *************************************************************
 SET /p etapa=****  ETAPA:
 GOTO loop
 :start
-IF NOT EXIST %location%\extrator_parametros MKDIR %location%\extrator_parametros
-GOTO setdatetime
 
 :setdatetime
 SET data=%Date: =0%
@@ -108,13 +115,22 @@ SET tempo=%Time: =0%
 SET hora=%tempo:~0,2%
 SET minuto=%tempo:~3,2%
 
+REM IF NOT EXIST %location%\extrator_parametros MKDIR %location%\extrator_parametros
+
+SET exlocation=%location%Backups\%dia%-%mes%-%ano%\extrator_parametros
+REM ECHO %bkplocation%
+REM PAUSE>NUL
+IF NOT EXIST %exlocation% (
+  MKDIR %exlocation%
+)
+
 IF %bdtype% == 1 GOTO querysql
 IF %bdtype% == 2 GOTO queryora
 
 :querysql
 SET querydfeaplicacao=SELECT CAST(TDFE_PARAMETRO_APLICACAO.COD_PARAMETRO  AS VARCHAR(40)) AS COD_PARAMETRO, 	CAST(TDFE_PARAMETRO.DES_PARAMETRO AS VARCHAR(100)) AS DES_PARAMETRO, 	CAST(TDFE_PARAMETRO_APLICACAO.DES_VALOR AS VARCHAR(120)) AS DES_VALOR FROM TDFE_PARAMETRO_APLICACAO INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_APLICACAO.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO)
 SET querydfeempresa=SELECT CAST(TFRW_EMPRESA.COD_EMPRESA  AS VARCHAR(2)) AS COD_EMPRESA, CAST(TDFE_PARAMETRO_EMPRESA.COD_PARAMETRO  AS VARCHAR(40)) AS COD_PARAMETRO, CAST(TDFE_PARAMETRO.DES_PARAMETRO AS VARCHAR(80)) AS DES_PARAMETRO, CAST(TDFE_PARAMETRO_EMPRESA.DES_VALOR AS VARCHAR(40)) AS DES_VALOR FROM TDFE_PARAMETRO_EMPRESA INNER JOIN TFRW_EMPRESA ON(TDFE_PARAMETRO_EMPRESA.COD_EMPRESA=TFRW_EMPRESA.COD_EMPRESA) INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_EMPRESA.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO)
-SET querydfeestab=SELECT CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_EMPRESA  AS VARCHAR(10)) AS COD_EMPRESA, CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_ESTABELECIMENTO AS VARCHAR(10)) AS COD_ESTABELECIMENTO, CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_PARAMETRO  AS VARCHAR(40)) AS COD_PARAMETRO, CAST(TDFE_PARAMETRO.DES_PARAMETRO AS VARCHAR(80)) AS DES_PARAMETRO, CAST(TDFE_PARAMETRO_ESTABELECIMENTO.DES_VALOR AS VARCHAR(40)) AS DES_VALOR FROM TDFE_PARAMETRO_ESTABELECIMENTO INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_ESTABELECIMENTO.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO)
+SET querydfeestab=SELECT CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_EMPRESA AS VARCHAR(10)) AS COD_EMPRESA, CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_ESTABELECIMENTO AS VARCHAR(10)) AS COD_ESTABELECIMENTO, CAST(TDFE_PARAMETRO_NIVEL.COD_NIVEL AS VARCHAR(5)) AS COD_NIVEL, CAST(TDFE_PARAMETRO_ESTABELECIMENTO.COD_PARAMETRO AS VARCHAR(40)) AS COD_PARAMETRO, CAST(TDFE_PARAMETRO.DES_PARAMETRO AS VARCHAR(80)) AS DES_PARAMETRO, 	CAST(TDFE_PARAMETRO_ESTABELECIMENTO.DES_VALOR AS VARCHAR(40)) AS DES_VALOR FROM TDFE_PARAMETRO_ESTABELECIMENTO INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_ESTABELECIMENTO.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO) LEFT JOIN TDFE_PARAMETRO_NIVEL ON (TDFE_PARAMETRO_NIVEL.DES_TABLE='TDFE_PARAMETRO_ESTABELECIMENTO' AND TDFE_PARAMETRO.COD_NIVEL=TDFE_PARAMETRO_NIVEL.COD_NIVEL)
 SET querydfeconstr=SELECT DISTINCT(CAST(TDFE_ODBC_CONNECTION_STRING.CONNECTION_STRING AS VARCHAR(244))) AS CONNECTION_STRING, CAST(TDFE_ODBC_CONNECTION_STRING.ID_ODBC_CONNECTION_STRING AS VARCHAR(5)) AS ID_CONNECTION, CAST(TDFE_ODBC_ESTABELECIMENTO.COD_ESTABELECIMENTO AS VARCHAR(5)) AS COD_ESTAB,	CAST(TDFE_ODBC_ESTABELECIMENTO.COD_EMPRESA AS VARCHAR(5)) AS COD_EMPRESA FROM TDFE_ODBC_CONNECTION_STRING INNER JOIN TDFE_ODBC_ESTABELECIMENTO ON(TDFE_ODBC_CONNECTION_STRING.ID_ODBC_CONNECTION_STRING=TDFE_ODBC_ESTABELECIMENTO.ID_ODBC_CONNECTION_STRING) ORDER BY COD_EMPRESA, COD_ESTAB
 SET querydfeodbc=SELECT CAST(TDFE_ODBC.COD_EMPRESA AS VARCHAR(5)) AS COD_EMPRESA, CAST(TDFE_ODBC.COD_ODBC AS VARCHAR(30)) AS COD_ODBC, CAST(TDFE_ODBC.QUERY AS varchar(4020)) AS QUERY FROM TDFE_ODBC
 SET queryaudaplicacao=SELECT CAST(TAUD_PARAMETRO_APLICACAO.COD_PARAMETRO  AS VARCHAR(40)) AS COD_PARAMETRO, CAST(TAUD_PARAMETRO.DES_PARAMETRO AS VARCHAR(100)) AS DES_PARAMETRO, CAST(TAUD_PARAMETRO_APLICACAO.DES_VALOR AS VARCHAR(200)) AS DES_VALOR  FROM TAUD_PARAMETRO_APLICACAO INNER JOIN TAUD_PARAMETRO ON(TAUD_PARAMETRO_APLICACAO.COD_PARAMETRO=TAUD_PARAMETRO.COD_PARAMETRO)
@@ -126,43 +142,43 @@ ECHO *************************************************************
 ECHO *********       EXECUTANDO... AGUARDE     *******************
 ECHO *************************************************************
 
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeaplicacao%" -b -s " " -o %location%extrator_parametros\TDFE_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeaplicacao%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_APLICACAO   ********
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeempresa%" -b -s " " -o %location%extrator_parametros\TDFE_PARAMETRO_EMPRESA_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeempresa%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_EMPRESA_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_EMPRESA     ********
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeestab%" -b -s " " -o %location%extrator_parametros\TDFE_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeestab%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_ESTABELECIMENTO   **
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeconstr%" -b -s " " -o %location%extrator_parametros\TDFE_ODBC_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeconstr%" -b -s " " -o %exlocation%\TDFE_ODBC_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TDFE_ODBC_ESTABELECIMENTO   *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeodbc%" -b -s " " -b -o %location%extrator_parametros\TDFE_ODBC_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeodbc%" -b -s " " -b -o %exlocation%\TDFE_ODBC_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TDFE_ODBC                   *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudaplicacao%" -b -s " " -o %location%extrator_parametros\TAUD_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudaplicacao%" -b -s " " -o %exlocation%\TAUD_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TAUD_PARAMETRO_APLICACAO    *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
-sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudestab%" -b -s " " -o %location%extrator_parametros\TAUD_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
+sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudestab%" -b -s " " -o %exlocation%\TAUD_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
   ECHO ******  ERRO NA EXTRAÇÃO: TAUD_PARAMETRO_ESTABELECIMENTO  ***
@@ -190,4 +206,11 @@ ECHO ******  VERIFIQUE SE HÁ MENSAGENS DE ERROS ACIMA    *********
 ECHO ******  PRESSIONE QUALQUER TECLA PARA SAIR ...      *********
 ECHO *************************************************************
 PAUSE>nul
-EXIT
+
+:InputPassword
+SET "psCommand=powershell -Command "$pword = read-host '%1' -AsSecureString ; ^
+    $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
+      [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
+        for /f "usebackq delims=" %%p in (`%psCommand%`) do set %2=%%p
+)
+GOTO :eof
