@@ -48,22 +48,38 @@ net stop GovDFeEmail
 %windir%\system32\inetsrv\appcmd stop sites "%nomeiis%"
 ECHO *************************************************************
 ECHO *********    CHEQUE MENSAGENS DE ERRO ACIMA     *************
-ECHO *********    APERTE ENTER                       *************
+ECHO *********    PROXIMO PASSO: LIMPAR LOGS         *************
+ECHO *********    APERTE ENTER PARA EXECUTAR         *************
 ECHO *************************************************************
-PAUSE
+PAUSE>nul
 CLS
+:limpalogs
+IF NOT EXIST %location%script_limpa_logs.bat (
+  ECHO *************************************************************
+  ECHO *********    INSIRA O SCRIPT LIMPA LOGS          ************
+  ECHO *********    APERTE ENTER PARA EXECUTAR NOVAMENTE   *********
+  ECHO *************************************************************
+  PAUSE>nul
+  GOTO limpalogs
+)
+CALL %location%script_limpa_logs.bat
+CLS
+ECHO *************************************************************
+ECHO *********    PROXIMO PASSO: EXTRAIR PARAMETROS    ***********
+ECHO *********    APERTE ENTER PARA EXECUTAR         *************
+ECHO *************************************************************
+PAUSE>nul
 :extrator
 IF NOT EXIST %location%extrator_parametros.bat (
   ECHO *************************************************************
   ECHO *********    INSIRA O EXTRATOR DE PARAMETROS     ************
-  ECHO *********    APERTE ENTER PARA EXTRAIR PARAMETROS   *********
+  ECHO *********    APERTE ENTER PARA EXECUTAR NOVAMENTE   *********
   ECHO *************************************************************
   PAUSE>nul
   GOTO extrator
 )
-
 CALL %location%extrator_parametros.bat
-
+CLS
 IF NOT EXIST %location%\WebService GOTO copy
 
 :ishom
@@ -83,18 +99,33 @@ ECHO *********    APERTE ENTER PARA EXTRAIR PARAMETROS   *********
 ECHO *************************************************************
 PAUSE
 CLS
+:limpalogs
+IF NOT EXIST %location%script_limpa_logs.bat (
+  ECHO *************************************************************
+  ECHO *********    INSIRA O SCRIPT LIMPA LOGS          ************
+  ECHO *********    APERTE ENTER PARA EXECUTAR NOVAMENTE   *********
+  ECHO *************************************************************
+  PAUSE>nul
+  GOTO limpalogs
+)
+CALL %location%script_limpa_logs.bat
+CLS
+ECHO *************************************************************
+ECHO *********    PROXIMO PASSO: EXTRAIR PARAMETROS    ***********
+ECHO *********    APERTE ENTER PARA EXECUTAR         *************
+ECHO *************************************************************
+PAUSE>nul
 :extrator
 IF NOT EXIST %location%extrator_parametros.bat (
   ECHO *************************************************************
   ECHO *********    INSIRA O EXTRATOR DE PARAMETROS     ************
-  ECHO *********    APERTE ENTER PARA EXTRAIR PARAMETROS   *********
+  ECHO *********    APERTE ENTER PARA EXECUTAR NOVAMENTE   *********
   ECHO *************************************************************
   PAUSE>nul
   GOTO extrator
 )
-PAUSE
-
 CALL %location%extrator_parametros.bat
+CLS
 
 REM IF NOT EXIST %bkplocation% (
 REM   MKDIR %bkplocation%

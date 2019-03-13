@@ -16,7 +16,7 @@ IF %bdtype% == 2 GOTO connectionora
 
 :connectionora
 ECHO *************************************************************
-ECHO *********  INSIRA OS DADOS DE CONEXÃO     *******************
+ECHO *********  INSIRA OS DADOS DE CONEXAO     *******************
 ECHO *************************************************************
 SET /p ip= *** ENDEREÇO DO SERVIDOR (C/ PORTA SE HOUVE):
 SET /p user= *** USUARIO DO BANCO:
@@ -24,7 +24,7 @@ REM SET /p password= *** SENHA:
 Call:InputPassword "*** SENHA" password
 CLS
 ECHO *************************************************************
-ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
+ECHO *********  AGUARDE: TESTE DE CONEXAO      *******************
 ECHO *************************************************************
 ECHO SELECT COUNT(*) FROM ALL_ALL_TABLES | sqlplus %user%/%password%@%ip%
 IF ERRORLEVEL 1 (
@@ -38,12 +38,12 @@ GOTO stepselect
 
 :connectionsql
 ECHO *************************************************************
-ECHO *********  INSIRA OS DADOS DE CONEXÃO     *******************
+ECHO *********  INSIRA OS DADOS DE CONEXAO     *******************
 ECHO *************************************************************
 SET /p ip= *** IP DO SERVIDOR:
-SET /p instance= *** INSTÂNCIA (SE TIVER):
+SET /p instance= *** INSTANCIA (SE TIVER):
 SET /p dbname=  *** NOME DA BASE DE DADOS:
-SET /p user= *** USUÁRIO DO BANCO:
+SET /p user= *** USUARIO DO BANCO:
 Call:InputPassword "*** SENHA" password
 REM SET /p password= *** SENHA:
 REM SET ip=qualidade.quirius.com.br
@@ -53,7 +53,7 @@ REM SET user=sa
 REM SET password=@quirius123
 CLS
 ECHO *************************************************************
-ECHO *********  AGUARDE: TESTE DE CONEXÃO      *******************
+ECHO *********  AGUARDE: TESTE DE CONEXAO      *******************
 ECHO *************************************************************
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "use master"
 IF ERRORLEVEL 1 (
@@ -65,13 +65,13 @@ CLS
 
 :stepselect
 ECHO *************************************************************
-ECHO *********  SELECIONE A ETAPA DA INSTAÇÃO  *******************
+ECHO *********  SELECIONE A ETAPA DA INSTACAO  *******************
 ECHO *************************************************************
-ECHO ****  1 - TÉRMINO DA IMPLANTAÇÃO TÉCNICA       **************
-ECHO ****  2 - TÉRMINO DA PARAMETRIZAÇÃO FUNCIONAL  **************
+ECHO ****  1 - TERMINO DA IMPLANTACAO TECNICA       **************
+ECHO ****  2 - TERMINO DA PARAMETRIZACAO FUNCIONAL  **************
 ECHO ****  3 - GOLIVE                          *******************
-ECHO ****  4 - ANTES DA ATUALIZAÇÃO            *******************
-ECHO ****  5 - APÓS A ATUALIZAÇÃO              *******************
+ECHO ****  4 - ANTES DA ATUALIZACAO            *******************
+ECHO ****  5 - APOS A ATUALIZACAO              *******************
 ECHO *************************************************************
 ECHO *************************************************************
 SET /p etapa=****  ETAPA:
@@ -89,13 +89,13 @@ GOTO start
 :valorerrado
 CLS
 ECHO *************************************************************
-ECHO *********  SELECIONE A ETAPA DA INSTAÇÃO  *******************
+ECHO *********  SELECIONE A ETAPA DA INSTACAO  *******************
 ECHO *************************************************************
-ECHO ****  1 - TÉRMINO DA IMPLANTAÇÃO TÉCNICA       **************
-ECHO ****  2 - TÉRMINO DA PARAMETRIZAÇÃO FUNCIONAL  **************
+ECHO ****  1 - TERMINO DA IMPLANTACAO TECNICA       **************
+ECHO ****  2 - TERMINO DA PARAMETRIZACAO FUNCIONAL  **************
 ECHO ****  3 - GOLIVE                          *******************
-ECHO ****  4 - ANTES DA ATUALIZAÇÃO            *******************
-ECHO ****  5 - APÓS A ATUALIZAÇÃO              *******************
+ECHO ****  4 - ANTES DA ATUALIZACAO            *******************
+ECHO ****  5 - APOS A ATUALIZACAO              *******************
 ECHO *************************************************************
 ECHO *************************************************************
 ECHO *********  VALOR INCONSISTENTE!!!  **************************
@@ -145,43 +145,43 @@ ECHO *************************************************************
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeaplicacao%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_APLICACAO   ********
+  ECHO ******  ERRO NA EXTRACAO: TDFE_PARAMETRO_APLICACAO   ********
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q  "%querydfeempresa%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_EMPRESA_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_EMPRESA     ********
+  ECHO ******  ERRO NA EXTRACAO: TDFE_PARAMETRO_EMPRESA     ********
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeestab%" -b -s " " -o %exlocation%\TDFE_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TDFE_PARAMETRO_ESTABELECIMENTO   **
+  ECHO ******  ERRO NA EXTRACAO: TDFE_PARAMETRO_ESTABELECIMENTO   **
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeconstr%" -b -s " " -o %exlocation%\TDFE_ODBC_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TDFE_ODBC_ESTABELECIMENTO   *******
+  ECHO ******  ERRO NA EXTRACAO: TDFE_ODBC_ESTABELECIMENTO   *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%querydfeodbc%" -b -s " " -b -o %exlocation%\TDFE_ODBC_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TDFE_ODBC                   *******
+  ECHO ******  ERRO NA EXTRACAO: TDFE_ODBC                   *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudaplicacao%" -b -s " " -o %exlocation%\TAUD_PARAMETRO_APLICACAO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TAUD_PARAMETRO_APLICACAO    *******
+  ECHO ******  ERRO NA EXTRACAO: TAUD_PARAMETRO_APLICACAO    *******
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 sqlcmd -S %ip%\%instance% -U %user% -P %password% -d %dbname% -Q "%queryaudestab%" -b -s " " -o %exlocation%\TAUD_PARAMETRO_ESTABELECIMENTO_%ano%%mes%%dia%_%hora%%minuto%_%etapa%.txt
 IF ERRORLEVEL 1 (
   ECHO *************************************************************
-  ECHO ******  ERRO NA EXTRAÇÃO: TAUD_PARAMETRO_ESTABELECIMENTO  ***
+  ECHO ******  ERRO NA EXTRACAO: TAUD_PARAMETRO_ESTABELECIMENTO  ***
   PAUSE>nul |set/p = ******  APERTE ENTER PARA CONTINUAR !!               ********
 )
 
@@ -189,7 +189,7 @@ GOTO finish
 
 :queryora
 ECHO *************************************************************
-ECHO *********  FUNÇÃO NÃO IMPLEMENTADA        *******************
+ECHO *********  FUNCAO NAO IMPLEMENTADA        *******************
 ECHO *************************************************************
 REM SET querydfeaplicacao=SELECT TO_CHAR(TDFE_PARAMETRO_APLICACAO.COD_PARAMETRO (40)) AS COD_PARAMETRO, 	TO_CHAR(TDFE_PARAMETRO.DES_PARAMETRO(100)) AS DES_PARAMETRO, 	TO_CHAR(TDFE_PARAMETRO_APLICACAO.DES_VALOR(120)) AS DES_VALOR FROM TDFE_PARAMETRO_APLICACAO INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_APLICACAO.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO)
 REM SET querydfeempresa=SELECT TO_CHAR(TFRW_EMPRESA.COD_EMPRESA (2)) AS COD_EMPRESA, TO_CHAR(TDFE_PARAMETRO_EMPRESA.COD_PARAMETRO (40)) AS COD_PARAMETRO, TO_CHAR(TDFE_PARAMETRO.DES_PARAMETRO(80)) AS DES_PARAMETRO, TO_CHAR(TDFE_PARAMETRO_EMPRESA.DES_VALOR(40)) AS DES_VALOR FROM TDFE_PARAMETRO_EMPRESA INNER JOIN TFRW_EMPRESA ON(TDFE_PARAMETRO_EMPRESA.COD_EMPRESA=TFRW_EMPRESA.COD_EMPRESA) INNER JOIN TDFE_PARAMETRO ON(TDFE_PARAMETRO_EMPRESA.COD_PARAMETRO=TDFE_PARAMETRO.COD_PARAMETRO)
@@ -202,7 +202,7 @@ REM SET queryaudestab=SELECT TO_CHAR(TAUD_PARAMETRO_ESTABELECIMENTO.COD_EMPRESA 
 :finish
 ECHO *************************************************************
 ECHO *********  FIM DO PROCESSO               ********************
-ECHO ******  VERIFIQUE SE HÁ MENSAGENS DE ERROS ACIMA    *********
+ECHO ******  VERIFIQUE SE HA MENSAGENS DE ERROS ACIMA    *********
 ECHO ******  PRESSIONE QUALQUER TECLA PARA SAIR ...      *********
 ECHO *************************************************************
 PAUSE>nul
